@@ -1,15 +1,1134 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#b91c1c" />
 
   <title>Phiên dịch Anh - Việt</title>
+
+  <style>
+    :root {
+      --red: #b91c1c;
+      --red-dark: #7f1d1d;
+      --red-soft: #fee2e2;
+      --blue: #1d4ed8;
+      --blue-dark: #1e3a8a;
+      --blue-soft: #dbeafe;
+      --green: #15803d;
+      --gray: #475569;
+      --line: #e2e8f0;
+      --page: #fff7f7;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--page);
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+
+      padding:
+        max(18px, env(safe-area-inset-top))
+        max(14px, env(safe-area-inset-right))
+        max(22px, env(safe-area-inset-bottom))
+        max(14px, env(safe-area-inset-left));
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+      color: #1f2937;
+
+      background:
+        radial-gradient(circle at top left, #ffe4e6 0, transparent 38%),
+        linear-gradient(180deg, #fffafa 0%, #ffffff 100%);
+    }
+
+    .app {
+      width: min(760px, 100%);
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      color: var(--red-dark);
+      font-size: clamp(27px, 7vw, 42px);
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--gray);
+      font-size: 15px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      margin: 16px 0;
+      padding: 12px 14px;
+      border: 1px solid #fecaca;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.92);
+      font-weight: 700;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      flex: 0 0 12px;
+      border-radius: 50%;
+      background: #94a3b8;
+    }
+
+    .status.listening .dot {
+      background: #ef4444;
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.55);
+      animation: pulse 1.25s infinite;
+    }
+
+    .status.translating .dot {
+      background: #f59e0b;
+    }
+
+    .status.success .dot {
+      background: var(--green);
+    }
+
+    .status.error .dot {
+      background: #dc2626;
+    }
+
+    @keyframes pulse {
+      70% {
+        box-shadow: 0 0 0 11px rgba(239, 68, 68, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+      }
+    }
+
+    .mode-buttons {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    button {
+      min-height: 58px;
+      border: 0;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font: inherit;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: transform 0.08s ease, filter 0.15s ease;
+    }
+
+    button:active {
+      transform: scale(0.985);
+    }
+
+    .btn-vi {
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      box-shadow: 0 8px 20px rgba(127, 29, 29, 0.20);
+    }
+
+    .btn-en {
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+      box-shadow: 0 8px 20px rgba(30, 58, 138, 0.18);
+    }
+
+    .active-button {
+      outline: 4px solid rgba(245, 158, 11, 0.35);
+      filter: brightness(1.08);
+    }
+
+    .card {
+      margin-top: 12px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .card-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+      font-weight: 800;
+    }
+
+    .language-tag {
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--red-dark);
+      background: var(--red-soft);
+    }
+
+    .translation-card .language-tag {
+      color: var(--blue-dark);
+      background: var(--blue-soft);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 122px;
+      resize: vertical;
+      border: 1px solid #cbd5e1;
+      border-radius: 13px;
+      padding: 13px;
+      color: #111827;
+      background: #ffffff;
+      font: inherit;
+      font-size: 19px;
+      line-height: 1.45;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+    }
+
+    .small-note {
+      min-height: 20px;
+      margin-top: 8px;
+      color: #64748b;
+      font-size: 13px;
+      font-style: italic;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn-stop {
+      color: #ffffff;
+      background: #334155;
+    }
+
+    .btn-clear {
+      color: #7f1d1d;
+      border: 1px solid #fecaca;
+      background: #ffffff;
+    }
+
+    .btn-read {
+      grid-column: 1 / -1;
+      color: #14532d;
+      border: 1px solid #bbf7d0;
+      background: #f0fdf4;
+    }
+
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin: 14px 2px 0;
+      color: #334155;
+      font-size: 14px;
+    }
+
+    .option {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--red);
+    }
+
+    .privacy {
+      margin: 15px 2px 0;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    @media (min-width: 620px) {
+      .mode-buttons {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Ứng dụng phiên dịch Anh - Việt</h1>
+  <main class="app">
 
-  <p>Tôi đã tạo file trang web thành công!</p>
+    <header class="header">
+      <h1>🎧 Phiên dịch Anh – Việt</h1>
+
+      <p class="subtitle">
+        Chạm một nút, nói từng câu ngắn và chờ bản dịch.
+      </p>
+    </header>
+
+    <section id="statusBox" class="status" aria-live="polite">
+      <span class="dot"></span>
+
+      <span id="statusText">
+        Sẵn sàng. Hãy chọn chiều phiên dịch.
+      </span>
+    </section>
+
+    <section class="mode-buttons" aria-label="Chọn chiều phiên dịch">
+
+      <button id="viToEnButton" class="btn-vi" type="button">
+        🎤 VIỆT ➜ ANH
+      </button>
+
+      <button id="enToViButton" class="btn-en" type="button">
+        🎤 ANH ➜ VIỆT
+      </button>
+
+    </section>
+
+    <section class="card">
+
+      <div class="card-title">
+        <span>🗣️ Nội dung nghe được</span>
+
+        <span id="sourceLanguageTag" class="language-tag">
+          Chưa chọn
+        </span>
+      </div>
+
+      <textarea
+        id="sourceText"
+        placeholder="Lời nói sẽ hiện ở đây..."
+        aria-label="Nội dung nghe được"
+      ></textarea>
+
+      <div id="interimText" class="small-note"></div>
+
+    </section>
+
+    <section class="card translation-card">
+
+      <div class="card-title">
+        <span>🌍 Bản dịch</span>
+
+        <span id="targetLanguageTag" class="language-tag">
+          Chưa chọn
+        </span>
+      </div>
+
+      <textarea
+        id="translatedText"
+        placeholder="Bản dịch sẽ hiện ở đây..."
+        aria-label="Bản dịch"
+        readonly
+      ></textarea>
+
+    </section>
+
+    <section class="controls">
+
+      <button id="stopButton" class="btn-stop" type="button">
+        ⏹ DỪNG NGHE
+      </button>
+
+      <button id="clearButton" class="btn-clear" type="button">
+        🗑 XÓA NỘI DUNG
+      </button>
+
+      <button id="readButton" class="btn-read" type="button">
+        🔊 ĐỌC LẠI BẢN DỊCH
+      </button>
+
+    </section>
+
+    <section class="options">
+
+      <label class="option">
+        <input id="autoSpeak" type="checkbox" checked />
+        Tự đọc bản dịch
+      </label>
+
+      <label class="option">
+        <input id="keepScreenAwake" type="checkbox" checked />
+        Cố giữ màn hình sáng
+      </label>
+
+    </section>
+
+    <p class="privacy">
+      Không cần tài khoản trả phí hoặc khóa API.
+      Lời nói được Safari nhận dạng;
+      phần chữ được gửi tới dịch vụ MyMemory để dịch.
+    </p>
+
+  </main>
+
+  <script>
+    "use strict";
+
+    const SpeechRecognition =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
+
+    const statusBox =
+      document.getElementById("statusBox");
+
+    const statusText =
+      document.getElementById("statusText");
+
+    const viToEnButton =
+      document.getElementById("viToEnButton");
+
+    const enToViButton =
+      document.getElementById("enToViButton");
+
+    const stopButton =
+      document.getElementById("stopButton");
+
+    const clearButton =
+      document.getElementById("clearButton");
+
+    const readButton =
+      document.getElementById("readButton");
+
+    const sourceText =
+      document.getElementById("sourceText");
+
+    const translatedText =
+      document.getElementById("translatedText");
+
+    const interimText =
+      document.getElementById("interimText");
+
+    const sourceLanguageTag =
+      document.getElementById("sourceLanguageTag");
+
+    const targetLanguageTag =
+      document.getElementById("targetLanguageTag");
+
+    const autoSpeak =
+      document.getElementById("autoSpeak");
+
+    const keepScreenAwake =
+      document.getElementById("keepScreenAwake");
+
+    let recognition = null;
+    let selectedMode = null;
+    let shouldListen = false;
+    let recognitionRunning = false;
+    let isSpeaking = false;
+    let restartTimer = null;
+    let wakeLock = null;
+    let lastFinalTranscript = "";
+
+    const MODES = {
+      viToEn: {
+        recognitionLanguage: "vi-VN",
+        sourceCode: "vi",
+        targetCode: "en",
+        sourceLabel: "Tiếng Việt",
+        targetLabel: "English",
+        listeningMessage:
+          "Đang nghe TIẾNG VIỆT... Hãy nói một câu ngắn.",
+        voiceLanguage: "en-US"
+      },
+
+      enToVi: {
+        recognitionLanguage: "en-US",
+        sourceCode: "en",
+        targetCode: "vi",
+        sourceLabel: "English",
+        targetLabel: "Tiếng Việt",
+        listeningMessage:
+          "Đang nghe TIẾNG ANH... Hãy nói một câu ngắn.",
+        voiceLanguage: "vi-VN"
+      }
+    };
+
+    function setStatus(message, type = "") {
+      statusText.textContent = message;
+
+      statusBox.className =
+        "status" + (type ? " " + type : "");
+    }
+
+    function setActiveButton(modeName) {
+      viToEnButton.classList.toggle(
+        "active-button",
+        modeName === "viToEn"
+      );
+
+      enToViButton.classList.toggle(
+        "active-button",
+        modeName === "enToVi"
+      );
+    }
+
+    function updateLanguageLabels(mode) {
+      sourceLanguageTag.textContent =
+        mode.sourceLabel;
+
+      targetLanguageTag.textContent =
+        mode.targetLabel;
+    }
+
+    async function requestWakeLock() {
+      if (
+        !keepScreenAwake.checked ||
+        !("wakeLock" in navigator)
+      ) {
+        return;
+      }
+
+      try {
+        if (!wakeLock) {
+          wakeLock =
+            await navigator.wakeLock.request("screen");
+
+          wakeLock.addEventListener(
+            "release",
+            () => {
+              wakeLock = null;
+            }
+          );
+        }
+      } catch (error) {
+        console.log(
+          "Không thể giữ màn hình sáng:",
+          error
+        );
+      }
+    }
+
+    async function releaseWakeLock() {
+      if (!wakeLock) {
+        return;
+      }
+
+      try {
+        await wakeLock.release();
+      } catch (error) {
+        console.log(error);
+      } finally {
+        wakeLock = null;
+      }
+    }
+
+    function createRecognition() {
+      if (!SpeechRecognition) {
+        return null;
+      }
+
+      const instance =
+        new SpeechRecognition();
+
+      /*
+        Safari thường kết thúc một lượt nghe
+        sau một câu hoặc một khoảng im lặng.
+
+        Trang web sẽ tự mở lại Micro
+        trong sự kiện onend ở phía dưới.
+      */
+
+      instance.continuous = false;
+      instance.interimResults = true;
+      instance.maxAlternatives = 1;
+
+      instance.onstart = () => {
+        recognitionRunning = true;
+
+        if (selectedMode) {
+          setStatus(
+            selectedMode.listeningMessage,
+            "listening"
+          );
+        }
+      };
+
+      instance.onresult = (event) => {
+        let finalTranscript = "";
+        let temporaryTranscript = "";
+
+        for (
+          let i = event.resultIndex;
+          i < event.results.length;
+          i += 1
+        ) {
+          const words =
+            event.results[i][0].transcript.trim();
+
+          if (event.results[i].isFinal) {
+            finalTranscript +=
+              (finalTranscript ? " " : "") +
+              words;
+          } else {
+            temporaryTranscript +=
+              (temporaryTranscript ? " " : "") +
+              words;
+          }
+        }
+
+        interimText.textContent =
+          temporaryTranscript
+            ? "Đang nghe: " +
+              temporaryTranscript
+            : "";
+
+        if (finalTranscript) {
+          const cleanedText =
+            finalTranscript.trim();
+
+          interimText.textContent = "";
+
+          /*
+            Tránh dịch lại đúng một câu
+            nếu Safari gửi kết quả lặp.
+          */
+
+          if (
+            cleanedText !==
+            lastFinalTranscript
+          ) {
+            lastFinalTranscript =
+              cleanedText;
+
+            sourceText.value =
+              cleanedText;
+
+            translateText(cleanedText);
+          }
+        }
+      };
+
+      instance.onerror = (event) => {
+        recognitionRunning = false;
+
+        if (
+          event.error === "not-allowed" ||
+          event.error ===
+            "service-not-allowed"
+        ) {
+          shouldListen = false;
+
+          setActiveButton(null);
+
+          setStatus(
+            "Safari chưa được phép dùng Micro hoặc Nhận dạng giọng nói.",
+            "error"
+          );
+
+          return;
+        }
+
+        if (
+          event.error === "audio-capture"
+        ) {
+          setStatus(
+            "Không tìm thấy Micro. Hãy kiểm tra quyền Micro.",
+            "error"
+          );
+
+          return;
+        }
+
+        if (event.error === "network") {
+          setStatus(
+            "Mạng đang có vấn đề. Ứng dụng sẽ thử nghe lại.",
+            "error"
+          );
+
+          return;
+        }
+
+        if (
+          event.error !== "no-speech" &&
+          event.error !== "aborted"
+        ) {
+          setStatus(
+            "Safari vừa ngắt Micro. Ứng dụng đang thử nối lại...",
+            "error"
+          );
+        }
+      };
+
+      instance.onend = () => {
+        recognitionRunning = false;
+
+        if (
+          shouldListen &&
+          !isSpeaking
+        ) {
+          scheduleRestart();
+        }
+      };
+
+      return instance;
+    }
+
+    function scheduleRestart() {
+      clearTimeout(restartTimer);
+
+      restartTimer =
+        setTimeout(() => {
+          startRecognitionSession();
+        }, 700);
+    }
+
+    function startRecognitionSession() {
+      if (
+        !shouldListen ||
+        isSpeaking ||
+        !selectedMode ||
+        recognitionRunning
+      ) {
+        return;
+      }
+
+      if (!SpeechRecognition) {
+        setStatus(
+          "Trình duyệt này không hỗ trợ nhận dạng giọng nói. Hãy mở bằng Safari mới trên iPhone hoặc iPad.",
+          "error"
+        );
+
+        shouldListen = false;
+        setActiveButton(null);
+
+        return;
+      }
+
+      try {
+        if (!recognition) {
+          recognition =
+            createRecognition();
+        }
+
+        recognition.lang =
+          selectedMode.recognitionLanguage;
+
+        recognition.start();
+      } catch (error) {
+        /*
+          Safari có thể báo lỗi
+          nếu gọi lệnh mở Micro
+          quá sát lần trước.
+        */
+
+        scheduleRestart();
+      }
+    }
+
+    async function chooseMode(modeName) {
+      const nextMode =
+        MODES[modeName];
+
+      /*
+        Chạm lại đúng nút đang chạy
+        sẽ tạm dừng.
+      */
+
+      if (
+        shouldListen &&
+        selectedMode === nextMode
+      ) {
+        stopListening(
+          "Đã tạm dừng. Chạm nút phiên dịch để nghe tiếp."
+        );
+
+        return;
+      }
+
+      stopRecognitionOnly();
+
+      window.speechSynthesis.cancel();
+
+      isSpeaking = false;
+      selectedMode = nextMode;
+      shouldListen = true;
+      lastFinalTranscript = "";
+
+      updateLanguageLabels(nextMode);
+      setActiveButton(modeName);
+
+      setStatus(
+        "Đang mở Micro...",
+        "translating"
+      );
+
+      await requestWakeLock();
+
+      startRecognitionSession();
+    }
+
+    function stopRecognitionOnly() {
+      clearTimeout(restartTimer);
+
+      if (
+        recognition &&
+        recognitionRunning
+      ) {
+        try {
+          recognition.abort();
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      recognitionRunning = false;
+    }
+
+    function stopListening(
+      message = "Đã dừng nghe."
+    ) {
+      shouldListen = false;
+      isSpeaking = false;
+
+      stopRecognitionOnly();
+
+      window.speechSynthesis.cancel();
+
+      setActiveButton(null);
+      setStatus(message);
+
+      releaseWakeLock();
+    }
+
+    function limitUtf8(
+      text,
+      maxBytes = 450
+    ) {
+      const encoder =
+        new TextEncoder();
+
+      let result = "";
+
+      for (const character of text) {
+        const candidate =
+          result + character;
+
+        if (
+          encoder.encode(candidate).length >
+          maxBytes
+        ) {
+          break;
+        }
+
+        result = candidate;
+      }
+
+      return result.trim();
+    }
+
+    function decodeHtml(text) {
+      const element =
+        document.createElement("textarea");
+
+      element.innerHTML = text;
+
+      return element.value;
+    }
+
+    async function translateText(text) {
+      if (
+        !selectedMode ||
+        !text.trim()
+      ) {
+        return;
+      }
+
+      const modeAtRequest =
+        selectedMode;
+
+      const textToSend =
+        limitUtf8(text.trim());
+
+      setStatus(
+        "Đã nghe xong. Đang dịch...",
+        "translating"
+      );
+
+      try {
+        const url =
+          "https://api.mymemory.translated.net/get?q=" +
+          encodeURIComponent(textToSend) +
+          "&langpair=" +
+          encodeURIComponent(
+            modeAtRequest.sourceCode +
+            "|" +
+            modeAtRequest.targetCode
+          );
+
+        const response =
+          await fetch(url, {
+            method: "GET",
+            cache: "no-store"
+          });
+
+        if (!response.ok) {
+          throw new Error(
+            "Dịch vụ trả về lỗi " +
+            response.status
+          );
+        }
+
+        const data =
+          await response.json();
+
+        const rawTranslation =
+          data?.responseData
+            ?.translatedText || "";
+
+        const translation =
+          decodeHtml(
+            rawTranslation
+          ).trim();
+
+        /*
+          Nếu người dùng đã đổi chiều dịch
+          trong lúc hệ thống đang xử lý,
+          bỏ qua kết quả cũ.
+        */
+
+        if (
+          selectedMode !==
+          modeAtRequest
+        ) {
+          return;
+        }
+
+        if (
+          !translation ||
+          /MYMEMORY WARNING|QUOTA|LIMIT/i.test(
+            translation
+          ) ||
+          Number(data?.responseStatus) ===
+            429
+        ) {
+          throw new Error(
+            "Đã hết lượt dịch miễn phí hoặc không nhận được bản dịch."
+          );
+        }
+
+        translatedText.value =
+          translation;
+
+        setStatus(
+          "Dịch xong. Ứng dụng sẽ tiếp tục nghe.",
+          "success"
+        );
+
+        if (autoSpeak.checked) {
+          speakTranslation();
+        }
+      } catch (error) {
+        console.error(error);
+
+        setStatus(
+          "Chưa dịch được. Có thể mạng yếu hoặc đã hết lượt dịch miễn phí hôm nay.",
+          "error"
+        );
+
+        if (
+          shouldListen &&
+          !isSpeaking
+        ) {
+          scheduleRestart();
+        }
+      }
+    }
+
+    function speakTranslation() {
+      const text =
+        translatedText.value.trim();
+
+      if (
+        !text ||
+        !selectedMode ||
+        !("speechSynthesis" in window)
+      ) {
+        return;
+      }
+
+      /*
+        Tạm dừng Micro khi máy đọc
+        để ứng dụng không nghe lại
+        chính tiếng nói của máy.
+      */
+
+      isSpeaking = true;
+
+      stopRecognitionOnly();
+
+      window.speechSynthesis.cancel();
+
+      const utterance =
+        new SpeechSynthesisUtterance(
+          text
+        );
+
+      utterance.lang =
+        selectedMode.voiceLanguage;
+
+      utterance.rate = 0.92;
+      utterance.pitch = 1;
+
+      utterance.onstart = () => {
+        setStatus(
+          "Đang đọc bản dịch...",
+          "success"
+        );
+      };
+
+      utterance.onend = () => {
+        isSpeaking = false;
+
+        if (shouldListen) {
+          setStatus(
+            "Đọc xong. Đang mở Micro lại...",
+            "translating"
+          );
+
+          scheduleRestart();
+        }
+      };
+
+      utterance.onerror = () => {
+        isSpeaking = false;
+
+        if (shouldListen) {
+          scheduleRestart();
+        }
+      };
+
+      window.speechSynthesis.speak(
+        utterance
+      );
+    }
+
+    viToEnButton.addEventListener(
+      "click",
+      () => chooseMode("viToEn")
+    );
+
+    enToViButton.addEventListener(
+      "click",
+      () => chooseMode("enToVi")
+    );
+
+    stopButton.addEventListener(
+      "click",
+      () => stopListening()
+    );
+
+    clearButton.addEventListener(
+      "click",
+      () => {
+        sourceText.value = "";
+        translatedText.value = "";
+        interimText.textContent = "";
+        lastFinalTranscript = "";
+
+        setStatus(
+          shouldListen &&
+          selectedMode
+            ? selectedMode
+                .listeningMessage
+            : "Đã xóa nội dung."
+        );
+      }
+    );
+
+    readButton.addEventListener(
+      "click",
+      speakTranslation
+    );
+
+    keepScreenAwake.addEventListener(
+      "change",
+      () => {
+        if (
+          keepScreenAwake.checked &&
+          shouldListen
+        ) {
+          requestWakeLock();
+        } else {
+          releaseWakeLock();
+        }
+      }
+    );
+
+    /*
+      Khi quay lại Safari sau khi
+      chuyển sang ứng dụng khác,
+      thử mở lại Micro và giữ màn hình.
+    */
+
+    document.addEventListener(
+      "visibilitychange",
+      () => {
+        if (
+          document.visibilityState ===
+          "visible"
+        ) {
+          if (shouldListen) {
+            requestWakeLock();
+            scheduleRestart();
+          }
+        } else {
+          stopRecognitionOnly();
+        }
+      }
+    );
+
+    window.addEventListener(
+      "pagehide",
+      () => {
+        stopRecognitionOnly();
+        window.speechSynthesis.cancel();
+      }
+    );
+
+    if (!SpeechRecognition) {
+      setStatus(
+        "Máy chưa thấy chức năng nhận dạng giọng nói. Hãy dùng Safari mới và bật Siri.",
+        "error"
+      );
+    }
+  </script>
 </body>
 </html>
